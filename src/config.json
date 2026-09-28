@@ -1,0 +1,9 @@
+{
+  "discordtoken": "token",
+  "fluxerwebhook": "link",
+  "stoatwebhook": "link",
+  "discordchannelid": 69420,
+  "defaultavatar": "link",
+  "fluxer": true,
+  "stoat": true
+}
