@@ -1,9 +1,11 @@
 {
   "discordtoken": "token",
-  "fluxerwebhook": "link",
-  "stoatwebhook": "link",
-  "discordchannelid": 69420,
-  "defaultavatar": "link",
+  "fluxerwebhook": "hook",
+  "stoatwebhook": "hook",
+  "defaultavatar": "pfp",
+  "discordchannelid": 0,
+  "discordownerids": [0],
+  "discord": true,
   "fluxer": true,
   "stoat": true
 }
