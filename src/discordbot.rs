@@ -8,9 +8,9 @@ use serenity::gateway::ActivityData;
 use serenity::model::application::{Command, Interaction};
 use serenity::model::channel::Message;
 use serenity::model::gateway::Ready;
-use serenity::model::id::ChannelId as DiscordChannelId;
-use serenity::model::id::RoleId as DiscordRoleId;
-use serenity::model::id::UserId as DiscordUserId;
+use serenity::model::id::ChannelId;
+use serenity::model::id::RoleId;
+use serenity::model::id::UserId;
 use serenity::model::user::OnlineStatus;
 use serenity::prelude::*;
 use std::process;
@@ -45,8 +45,8 @@ impl EventHandler for Handler {
                     let mut re = Regex::new(r"[<][@]!?(\d{17,19})[>]").unwrap();
                     let mut msgnew = msg.content.clone();
                     for caps in re.captures_iter(&msg.content) {
-                        let id: u64 = caps[1].parse().expect("Id is Not a valid number");
-                        let user = DiscordUserId::new(id)
+                        let id: u64 = caps[1].parse().expect("Id is Not valid");
+                        let user = UserId::new(id)
                             .to_user(&ctx.http)
                             .await
                             .expect("Error Parsing Id");
@@ -69,8 +69,8 @@ impl EventHandler for Handler {
                     }
                     re = Regex::new(r"[<][#](\d{17,19})[>]").unwrap();
                     for caps in re.captures_iter(&msg.content) {
-                        let id: u64 = caps[1].parse().expect("Id is Not a valid number");
-                        let chan = DiscordChannelId::new(id)
+                        let id: u64 = caps[1].parse().expect("Id is not valid");
+                        let chan = ChannelId::new(id)
                             .to_channel(&ctx.http)
                             .await
                             .expect("Error Parsing Id");
@@ -79,9 +79,9 @@ impl EventHandler for Handler {
                     }
                     re = Regex::new(r"[<][@][&](\d{17,19})[>]").unwrap();
                     for caps in re.captures_iter(&msg.content) {
-                        let id: u64 = caps[1].parse().expect("Id is Not a valid number");
+                        let id: u64 = caps[1].parse().expect("Id is not valid");
                         let guild = msg.guild(&ctx.cache).unwrap();
-                        let role = guild.roles.get(&DiscordRoleId::new(id)).unwrap();
+                        let role = guild.roles.get(&RoleId::new(id)).unwrap();
                         msgnew = msgnew.replace(&caps[0], &format!("@{}", role.name));
                     }
                     let payload = WebhookPost {
@@ -165,7 +165,7 @@ impl EventHandler for Handler {
         };
         let activity = ActivityData::custom(format!(
             "Watching #{}",
-            DiscordChannelId::new(CONFIG.get().unwrap().discordchannelid)
+            ChannelId::new(CONFIG.get().unwrap().discordchannelid)
                 .name(&ctx.http)
                 .await
                 .unwrap_or("Unknown".to_string())
