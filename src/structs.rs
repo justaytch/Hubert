@@ -42,8 +42,8 @@ pub struct StoatWebhookPost {
 
 pub fn get_config() -> &'static Config {
     CONFIG.get_or_init(|| {
-        let text = fs::read_to_string("./src/config.toml").expect("Error opening src/config.toml");
-        toml::from_str(&text).expect("Invalid TOML syntax in src/config.toml")
+        let text = fs::read_to_string("./config.toml").expect("Error opening ./config.toml");
+        toml::from_str(&text).expect("Invalid TOML syntax in ./config.toml")
     })
 }
 
