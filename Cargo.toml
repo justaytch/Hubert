@@ -10,3 +10,7 @@ reqwest = { version = "0.12", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 regex = "1.13.1"
 serde_json = "1.0"
+fluxer-core = { version = "0.3.1", default-features = false }
+fluxer-builders = "0.3.1"
+fluxer-rest = "0.3.1"
+futures = "0.3.34"
