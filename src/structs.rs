@@ -1,21 +1,24 @@
 use reqwest::Client as RestClient;
 use serde::{Deserialize, Serialize};
-use std::sync::LazyLock;
-use std::sync::OnceLock;
+use std::fs;
+use std::sync::{LazyLock, OnceLock};
 
 #[derive(Deserialize)]
 pub struct Config {
-    pub botname: String,
-    pub discordtoken: String,
-    pub fluxertoken: String,
-    pub fluxerwebhook: String,
-    pub stoatwebhook: String,
-    pub discordchannelid: u64,
-    pub discordownerids: Vec<u64>,
+    pub name: String,
+    pub discord: BotConfig,
+    pub fluxer: BotConfig,
+    pub stoat: BotConfig,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct BotConfig {
+    pub enabled: bool,
+    pub token: String,
+    pub channelid: u64,
+    pub ownerids: Vec<u64>,
+    pub webhook: String,
     pub defaultavatar: String,
-    pub fluxer: bool,
-    pub stoat: bool,
-    pub discord: bool,
 }
 
 #[derive(Serialize)]
@@ -39,8 +42,8 @@ pub struct StoatWebhookPost {
 
 pub fn get_config() -> &'static Config {
     CONFIG.get_or_init(|| {
-        let json_str = include_str!("./config.json");
-        serde_json::from_str(json_str).expect("Invalid JSON syntax in config.json")
+        let text = fs::read_to_string("./src/config.toml").expect("Error opening src/config.toml");
+        toml::from_str(&text).expect("Invalid TOML syntax in src/config.toml")
     })
 }
 

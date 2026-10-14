@@ -22,7 +22,7 @@ pub async fn run() {
         Box::pin(async move {
             match event {
                 DispatchEvent::Ready => {
-                    println!("{} is connected to Fluxer!", config.botname);
+                    println!("{} is connected to Fluxer!", config.name);
                 }
 
                 DispatchEvent::MessageCreate { message, .. } => {
@@ -46,7 +46,7 @@ pub async fn run() {
         })
     });
 
-    if let Err(e) = client.login(&config.fluxertoken).await {
+    if let Err(e) = client.login(&config.fluxer.token).await {
         println!("login: {e:?}");
     }
 }

@@ -1,0 +1,25 @@
+name = "Hubert"
+
+[discord]
+enabled = true
+token = "token"
+channelid = 0
+ownerids = [0, 0]
+webhook = "hook"
+defaultavatar = "https://cdn.discordapp.com/embed/avatars/0.png"
+
+[fluxer]
+enabled = false
+token = "token"
+channelid = 0
+ownerids = [0, 0]
+webhook = "hook"
+defaultavatar = "https://github.com/fluxerapp/fluxer/blob/main/fluxer_static/avatars/0.png?raw=true"
+
+[stoat]
+enabled = true
+token = "token"
+channelid = 0
+ownerids = [0, 0]
+webhook = "hook"
+defaultavatar = "https://cdn.bsky.app/img/avatar/plain/did:plc:qyajbfzm2uhjni6gnkgboga2/bafkreiexpqtfjezmbnttj2xjwlb42tq2qgguqdbfagik7jowoavz4kdrz4"

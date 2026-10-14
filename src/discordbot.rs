@@ -39,8 +39,8 @@ impl EventHandler for Handler {
     async fn message(&self, ctx: Context, msg: Message) {
         let config = &CONFIG.get().unwrap();
         if !msg.author.bot {
-            if msg.channel_id.get() == config.discordchannelid {
-                if config.fluxer || config.stoat {
+            if msg.channel_id.get() == config.discord.channelid {
+                if config.fluxer.enabled || config.stoat.enabled {
                     let mut re = Regex::new(r"[<][@]!?(\d{17,19})[>]").unwrap();
                     let mut msgnew = msg.content.clone();
                     for caps in re.captures_iter(&msg.content) {
@@ -98,7 +98,7 @@ impl EventHandler for Handler {
                             msg.author
                                 .avatar_url()
                                 .as_deref()
-                                .unwrap_or(&config.defaultavatar),
+                                .unwrap_or(&config.fluxer.defaultavatar),
                         ),
                     };
                     let stoatpayload = StoatWebhookPost {
@@ -117,20 +117,20 @@ impl EventHandler for Handler {
                                 msg.author
                                     .avatar_url()
                                     .as_deref()
-                                    .unwrap_or(&config.defaultavatar),
+                                    .unwrap_or(&config.stoat.defaultavatar),
                             ),
                         },
                     };
-                    if config.fluxer {
+                    if config.fluxer.enabled {
                         let _ = RESTCLIENT
-                            .post(&config.fluxerwebhook)
+                            .post(&config.fluxer.webhook)
                             .json(&payload)
                             .send()
                             .await;
                     }
-                    if config.stoat {
+                    if config.stoat.enabled {
                         let _ = RESTCLIENT
-                            .post(&config.stoatwebhook)
+                            .post(&config.stoat.webhook)
                             .json(&stoatpayload)
                             .send()
                             .await;
@@ -142,7 +142,7 @@ impl EventHandler for Handler {
                     println!("Error sending message: {why:?}");
                 }
             }
-            if msg.content == "!logout" && config.discordownerids.contains(&msg.author.id.get()) {
+            if msg.content == "!logout" && config.discord.ownerids.contains(&msg.author.id.get()) {
                 if let Err(why) = msg.channel_id.say(&ctx.http, "Logging Out...").await {
                     println!("Error sending message: {why:?}");
                 }
@@ -152,7 +152,7 @@ impl EventHandler for Handler {
     }
 
     async fn ready(&self, ctx: Context, _: Ready) {
-        println!("{} is connected to Discord!", CONFIG.get().unwrap().botname);
+        println!("{} is connected to Discord!", CONFIG.get().unwrap().name);
 
         if let Err(why) = Command::set_global_commands(
             &ctx.http,
@@ -164,7 +164,7 @@ impl EventHandler for Handler {
         };
         let activity = ActivityData::custom(format!(
             "Watching #{}",
-            ChannelId::new(CONFIG.get().unwrap().discordchannelid)
+            ChannelId::new(CONFIG.get().unwrap().discord.channelid)
                 .name(&ctx.http)
                 .await
                 .unwrap_or("Unknown".to_string())
@@ -178,7 +178,7 @@ pub async fn run() {
         | GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
         | GatewayIntents::MESSAGE_CONTENT;
-    let mut client = Client::builder(&CONFIG.get().unwrap().discordtoken, intents)
+    let mut client = Client::builder(&CONFIG.get().unwrap().discord.token, intents)
         .event_handler(Handler)
         .await
         .expect("Error creating client");

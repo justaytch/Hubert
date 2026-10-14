@@ -14,14 +14,18 @@ async fn main() {
     let config = CONFIG.get().unwrap();
     let mut bots: Vec<Pin<Box<dyn Future<Output = ()> + Send>>> = Vec::new();
 
-    if config.discord {
+    if config.discord.enabled {
         bots.push(Box::pin(discordbot::run()));
     }
-    if config.fluxer {
+    if config.fluxer.enabled {
         bots.push(Box::pin(fluxerbot::run()));
     }
-    if config.stoat {
+    if config.stoat.enabled {
         bots.push(Box::pin(stoatbot::run()));
+    }
+    if bots.is_empty() {
+        println!("Nothing is enabled. Please check config.");
+        return;
     }
 
     future::join_all(bots).await;
