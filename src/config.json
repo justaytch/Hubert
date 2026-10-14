@@ -1,10 +1,14 @@
 {
+  "botname": "Hubert",
   "discordtoken": "token",
+  "fluxertoken": "token",
   "fluxerwebhook": "hook",
   "stoatwebhook": "hook",
   "defaultavatar": "pfp",
   "discordchannelid": 0,
+  "fluxerchannelid": 0,
   "discordownerids": [0],
+  "fluxerownerids": [0],
   "discord": true,
   "fluxer": true,
   "stoat": true

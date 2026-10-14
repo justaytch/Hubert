@@ -1,5 +1,5 @@
 use super::commands;
-use super::structs;
+use super::structs::*;
 
 use regex::Regex;
 use serenity::async_trait;
@@ -14,7 +14,6 @@ use serenity::model::id::UserId;
 use serenity::model::user::OnlineStatus;
 use serenity::prelude::*;
 use std::process;
-use structs::*;
 
 struct Handler;
 
@@ -152,8 +151,8 @@ impl EventHandler for Handler {
         }
     }
 
-    async fn ready(&self, ctx: Context, ready: Ready) {
-        println!("{} is connected to Discord!", ready.user.name);
+    async fn ready(&self, ctx: Context, _: Ready) {
+        println!("{} is connected to Discord!", CONFIG.get().unwrap().botname);
 
         if let Err(why) = Command::set_global_commands(
             &ctx.http,
@@ -174,7 +173,6 @@ impl EventHandler for Handler {
     }
 }
 
-#[tokio::main]
 pub async fn run() {
     let intents = GatewayIntents::GUILDS
         | GatewayIntents::GUILD_MESSAGES

@@ -5,7 +5,9 @@ use std::sync::OnceLock;
 
 #[derive(Deserialize)]
 pub struct Config {
+    pub botname: String,
     pub discordtoken: String,
+    pub fluxertoken: String,
     pub fluxerwebhook: String,
     pub stoatwebhook: String,
     pub discordchannelid: u64,
