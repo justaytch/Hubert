@@ -4,14 +4,6 @@ use std::fs;
 use std::sync::{LazyLock, OnceLock};
 
 #[derive(Deserialize)]
-pub struct Config {
-    pub name: String,
-    pub discord: BotConfig,
-    pub fluxer: BotConfig,
-    pub stoat: BotConfig,
-}
-
-#[derive(Deserialize, Debug)]
 pub struct BotConfig {
     pub enabled: bool,
     pub token: String,
@@ -19,6 +11,14 @@ pub struct BotConfig {
     pub ownerids: Vec<u64>,
     pub webhook: String,
     pub defaultavatar: String,
+}
+
+#[derive(Deserialize)]
+pub struct Config {
+    pub name: String,
+    pub discord: BotConfig,
+    pub fluxer: BotConfig,
+    pub stoat: BotConfig,
 }
 
 #[derive(Serialize)]

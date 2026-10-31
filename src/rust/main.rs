@@ -1,5 +1,6 @@
-use super::commands;
-use super::structs::*;
+mod commands;
+mod structs;
+use structs::*;
 
 use regex::Regex;
 use serenity::async_trait;
@@ -39,6 +40,22 @@ impl EventHandler for Handler {
     async fn message(&self, ctx: Context, msg: Message) {
         let config = &CONFIG.get().unwrap();
         if !msg.author.bot {
+            if msg.content == "!h" {
+                if let Err(why) = msg.reply(&ctx.http, "h").await {
+                    println!("Error sending message: {why:?}");
+                };
+            }
+            if msg.content == "!ping" {
+                if let Err(why) = msg.reply(&ctx.http, "Pong!").await {
+                    println!("Error sending message: {why:?}");
+                };
+            }
+            if msg.content == "!logout" && config.discord.ownerids.contains(&msg.author.id.get()) {
+                if let Err(why) = msg.reply(&ctx.http, "Logging Out...").await {
+                    println!("Error sending message: {why:?}");
+                };
+                process::exit(0x0);
+            }
             if msg.channel_id.get() == config.discord.channelid {
                 if config.fluxer.enabled || config.stoat.enabled {
                     let mut re = Regex::new(r"[<][@]!?(\d{17,19})[>]").unwrap();
@@ -137,17 +154,6 @@ impl EventHandler for Handler {
                     }
                 }
             }
-            if msg.content == "!h" {
-                if let Err(why) = msg.channel_id.say(&ctx.http, "h").await {
-                    println!("Error sending message: {why:?}");
-                }
-            }
-            if msg.content == "!logout" && config.discord.ownerids.contains(&msg.author.id.get()) {
-                if let Err(why) = msg.channel_id.say(&ctx.http, "Logging Out...").await {
-                    println!("Error sending message: {why:?}");
-                }
-                process::exit(0x0);
-            }
         }
     }
 
@@ -173,7 +179,9 @@ impl EventHandler for Handler {
     }
 }
 
-pub async fn run() {
+#[tokio::main]
+pub async fn main() {
+    get_config();
     let intents = GatewayIntents::GUILDS
         | GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
