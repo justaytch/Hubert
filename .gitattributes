@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+src/c/tomlc17.c -linguist-detectable
+src/c/tomlc17.h -linguist-detectable
