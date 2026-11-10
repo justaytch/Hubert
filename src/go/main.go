@@ -60,10 +60,16 @@ func main() {
 						msgnew = strings.Replace(msgnew, match[0], fmt.Sprintf("@%s", getrole(match[1], roles).Name), 1)
 					}
 					if config.Discord.Enabled {
+						var avatar string
+						if m.Author.Avatar == "" {
+							avatar = config.Fluxer.DefaultAvatar
+						} else {
+							avatar = fmt.Sprintf("https://fluxerusercontent.com/avatars/%s/%s.webp", m.Author.ID, m.Author.Avatar)
+						}
 						payload := WebhookPost{
 							Username:  fmt.Sprintf("%s (Fluxer User)", getusername(m.Author.ID, m.GuildID)),
 							Content:   msgnew,
-							AvatarUrl: fmt.Sprintf("https://fluxerusercontent.com/avatars/%s/%s.webp", m.Author.ID, m.Author.Avatar),
+							AvatarUrl: avatar,
 						}
 						marshalled, err := json.Marshal(payload)
 						if err != nil {
@@ -110,7 +116,9 @@ func main() {
 		}
 	})
 	bot.OnReady(func() {
-		bot.SetPresence("dnd")
+		bot.SetStatus("dnd", &gofluxer.CustomStatus{
+			Text: fmt.Sprintf("Watching #%s", *getchannel(strconv.FormatUint(config.Fluxer.ChannelId, 10)).Name),
+		})
 		fmt.Printf("%s is Connected to Fluxer!\n", config.Name)
 	})
 

@@ -19,7 +19,7 @@ defaultavatar = "https://github.com/fluxerapp/fluxer/blob/main/fluxer_static/ava
 [stoat]
 enabled = true
 token = "token"
-channelid = 0
-ownerids = [0, 0]
+channelid = "id"
+ownerids = ["id", "id"]
 webhook = "hook"
-defaultavatar = "https://cdn.bsky.app/img/avatar/plain/did:plc:qyajbfzm2uhjni6gnkgboga2/bafkreiexpqtfjezmbnttj2xjwlb42tq2qgguqdbfagik7jowoavz4kdrz4"
+defaultavatar = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/stoat.png"

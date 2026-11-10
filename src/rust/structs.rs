@@ -14,11 +14,22 @@ pub struct BotConfig {
 }
 
 #[derive(Deserialize)]
+#[allow(unused)]
+pub struct StoatConfig {
+    pub enabled: bool,
+    pub token: String,
+    pub channelid: String,
+    pub ownerids: Vec<String>,
+    pub webhook: String,
+    pub defaultavatar: String,
+}
+
+#[derive(Deserialize)]
 pub struct Config {
     pub name: String,
     pub discord: BotConfig,
     pub fluxer: BotConfig,
-    pub stoat: BotConfig,
+    pub stoat: StoatConfig,
 }
 
 #[derive(Serialize)]

@@ -74,12 +74,7 @@ impl EventHandler for Handler {
                                     .nick_in(&ctx.http, &msg.guild_id.unwrap_or_default())
                                     .await
                                     .as_deref()
-                                    .unwrap_or(
-                                        &msg.author
-                                            .global_name
-                                            .as_deref()
-                                            .unwrap_or(&msg.author.name)
-                                    )
+                                    .unwrap_or(&user.global_name.as_deref().unwrap_or(&user.name))
                             ),
                         );
                     }
@@ -89,9 +84,12 @@ impl EventHandler for Handler {
                         let chan = ChannelId::new(id)
                             .to_channel(&ctx.http)
                             .await
-                            .expect("Error Parsing Id");
-                        msgnew =
-                            msgnew.replace(&caps[0], &format!("#{}", &chan.guild().unwrap().name));
+                            .expect("Error parsing ID");
+                        let name = chan
+                            .guild()
+                            .map(|guild| guild.name.clone())
+                            .unwrap_or("Unknown".to_string());
+                        msgnew = msgnew.replace(&caps[0], &format!("#{name}"));
                     }
                     re = Regex::new(r"[<][@][&](\d{17,19})[>]").unwrap();
                     for caps in re.captures_iter(&msg.content) {

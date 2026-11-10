@@ -43,6 +43,7 @@ int main(void) {
     pid_t bot_pgid = -1;
     pid_t discordpid = -1;
     pid_t fluxerpid = -1;
+    pid_t stoatpid = -1;
     int bots_started = 0;
     if (discord.u.boolean) {
         discordpid = fork();
@@ -101,7 +102,32 @@ int main(void) {
         printf("Started %s Fluxer as process %ld\n",botname.u.s,(long)fluxerpid);
     }
     if (stoat.u.boolean) {
-        printf("Hello from Stoat!!!\n");
+        stoatpid = fork();
+        if (stoatpid < 0) {
+            toml_free(result);
+            error("fork");
+        }
+        if (stoatpid == 0) {
+            if (bot_pgid == -1) {
+                setpgid(0, 0);
+            }
+            else {
+                setpgid(0, bot_pgid);
+            }
+            execlp("node", "node", "./src/typescript/index.js", (char *)NULL);
+            toml_free(result);
+            error("execlp");
+            _exit(127);
+        }
+        if (bot_pgid == -1) {
+            bot_pgid = stoatpid;
+        }
+        if (setpgid(stoatpid, bot_pgid) < 0 && errno != EACCES) {
+            toml_free(result);
+            error("setpgid");
+        }
+        bots_started++;
+        printf("Started %s Stoat as process %ld\n",botname.u.s,(long)stoatpid);
     }
     if (bots_started > 0) {
         int status;

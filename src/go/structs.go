@@ -15,11 +15,20 @@ type BotConfig struct {
 	DefaultAvatar string
 }
 
+type StoatConfig struct {
+	Enabled       bool
+	Token         string
+	ChannelId     string
+	OwnerIds      []string
+	Webhook       string
+	DefaultAvatar string
+}
+
 type Config struct {
 	Name    string
 	Discord BotConfig
 	Fluxer  BotConfig
-	Stoat   BotConfig
+	Stoat   StoatConfig
 }
 
 type WebhookPost struct {
