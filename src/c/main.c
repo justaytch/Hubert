@@ -9,6 +9,13 @@
 #include <errno.h>
 #include "tomlc17.h"
 
+static volatile sig_atomic_t stop_requested = 0;
+
+static void handle_kill(int signo) {
+    (void)signo;
+    stop_requested = 1;
+}
+
 static void error(const char *msg) {
   fprintf(stderr, "ERROR: %s\n", msg);
   exit(1);
@@ -39,6 +46,14 @@ int main(void) {
     if (stoat.type != TOML_BOOLEAN) {
         toml_free(result);
         error("Invalid stoat.enabled, check config.");
+    }
+    struct sigaction sa = {0};
+    sa.sa_handler = handle_kill;
+    sigemptyset(&sa.sa_mask);
+    if (sigaction(SIGTERM, &sa, NULL) == -1 ||
+        sigaction(SIGINT, &sa, NULL) == -1) {
+        perror("sigaction");
+        return 1;
     }
     pid_t bot_pgid = -1;
     pid_t discordpid = -1;
@@ -131,17 +146,32 @@ int main(void) {
     }
     if (bots_started > 0) {
         int status;
-        pid_t ended = waitpid(-1, &status, 0);
-        if (ended < 0) {
-            toml_free(result);
-            error("waitpid");
+        pid_t ended = -1;
+        while (!stop_requested) {
+            ended = waitpid(-1, &status, 0);
+            if (ended >= 0)
+                break;
+            if (errno == EINTR) {
+                continue;
+            }
+            if (errno == ECHILD)
+                break;
+            perror("waitpid");
+            break;
         }
-        printf("Bot process %ld exited, stopping the other bots...\n", (long)ended);
-        if (kill(-bot_pgid, SIGTERM) < 0 && errno != ESRCH) {
-            toml_free(result);
-            error("kill");
+        if (stop_requested || ended >= 0) {
+            if (ended >= 0) {
+                printf("Bot process %ld exited, stopping the other bots...\n",
+                       (long)ended);
+            } else {
+                printf("Received a kill signal, stopping the bots...\n");
+            }
+            if (bot_pgid > 0 && kill(-bot_pgid, SIGTERM) < 0 && errno != ESRCH) {
+                perror("kill");
+            }
+            while (waitpid(-1, NULL, 0) > 0 || errno == EINTR) {
+            }
         }
-        while (waitpid(-1, NULL, 0) > 0);
     }
 
     toml_free(result);
